@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+	public event Action<bool> OnInteract;
+
 	[SerializeField] private float _moveSpeed = 5f;
 	[SerializeField] private float _mouseSensitivity = 100f;
 	[SerializeField] private float _interactionDistance = 5f;
@@ -61,25 +64,34 @@ public class PlayerController : MonoBehaviour
 		{
 			InteractableObject interactable = hit.collider.GetComponent<InteractableObject>();
 
-			if (interactable != _currentInteractable)
+			if (interactable != null && !interactable.IsPickUp)
 			{
+				if (interactable == _currentInteractable) return;
+
 				if (_currentInteractable != null)
 				{
 					_currentInteractable.HideItemUI();
 					_currentInteractable = null;
+					OnInteract?.Invoke(false);
 				}
 
-				if (interactable != null)
-				{
-					_currentInteractable = interactable;
-					_currentInteractable.ShowItemUI();
-				}
+				_currentInteractable = interactable;
+				_currentInteractable.ShowItemUI();
+				OnInteract?.Invoke(true);
+
+			}
+			else if (_currentInteractable != null)
+			{
+				_currentInteractable.HideItemUI();
+				_currentInteractable = null;
+				OnInteract?.Invoke(false);
 			}
 		}
 		else if (_currentInteractable != null)
 		{
 			_currentInteractable.HideItemUI();
 			_currentInteractable = null;
+			OnInteract?.Invoke(false);
 		}
 	}
 
@@ -92,9 +104,14 @@ public class PlayerController : MonoBehaviour
 			{
 				_currentInteractable.HideItemUI();
 				_currentInteractable = null;
+				OnInteract?.Invoke(false);
 			}
 		}
 	}
 
-	private void Interact() => StartCoroutine(_currentInteractable.SetNewPosition(_handPosition));
+	private void Interact()
+	{
+		StartCoroutine(_currentInteractable.SetNewPosition(_handPosition));
+		OnInteract?.Invoke(false);
+	}
 }

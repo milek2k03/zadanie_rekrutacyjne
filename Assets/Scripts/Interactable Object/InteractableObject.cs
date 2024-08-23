@@ -4,64 +4,73 @@ using UnityEngine;
 
 public class InteractableObject : MonoBehaviour
 {
-	[field: SerializeField] public string Name { get; private set; }
+    [field: SerializeField] public string Name { get; private set; }
+    [field: SerializeField] public bool IsPickUp { get; set; } = false;
 
-	[SerializeField] private TMP_Text _itemName;
-	[SerializeField] private GameObject _uiHolder;
-	[SerializeField] private float _moveDuration = 0.5f;
+    [SerializeField] private TMP_Text _itemName;
+    [SerializeField] private GameObject _uiHolder;
+    [SerializeField] private float _moveDuration = 0.5f;
 
-	private Camera _mainCamera;
-	private Rigidbody _rigidbody;
+    private Camera _mainCamera;
+    private Rigidbody _rigidbody;
+    private Collider _collider;
 
-	private void Start()
-	{
-		_itemName.text = Name;
-		_uiHolder.SetActive(false);
-		_mainCamera = Camera.main;
-		_rigidbody = GetComponent<Rigidbody>();
-	}
+    private void Start()
+    {
+        _itemName.text = Name;
+        _uiHolder.SetActive(false);
+        _mainCamera = Camera.main;
+        _rigidbody = GetComponent<Rigidbody>();
+        _collider = GetComponent<Collider>();
+    }
 
-	private void Update()
-	{
-		LookAtCamera();
-	}
+    private void Update()
+    {
+        LookAtCamera();
+    }
 
-	private void LookAtCamera()
-	{
-		if (!_uiHolder.activeSelf) return;
+    private void LookAtCamera()
+    {
+        if (!_uiHolder.activeSelf) return;
 
-		_uiHolder.transform.LookAt(_mainCamera.transform);
-		_uiHolder.transform.Rotate(0, 180f, 0);
-	}
+        _uiHolder.transform.LookAt(_mainCamera.transform);
+        _uiHolder.transform.Rotate(0, 180f, 0);
+    }
 
-	public void ShowItemUI()
-	{
-		_uiHolder.SetActive(true);
-	}
+    public void ShowItemUI()
+    {
+        _uiHolder.SetActive(true);
+    }
 
-	public void HideItemUI()
-	{
-		_uiHolder.SetActive(false);
-	}
+    public void HideItemUI()
+    {
+        _uiHolder.SetActive(false);
+    }
 
-	public IEnumerator SetNewPosition(Transform target)
-	{
-		HideItemUI();
+    public IEnumerator SetNewPosition(Transform target)
+    {
+        HideItemUI();
 
-		_rigidbody.isKinematic = true;
+        IsPickUp = true;
+        _rigidbody.isKinematic = true;
+        _collider.isTrigger = true;
 
-		Vector3 startPosition = transform.position;
-		Vector3 endPosition = target.position;
-		float elapsedTime = 0f;
+        Vector3 startPosition = transform.position;
+        Quaternion startRotation = transform.rotation;
 
-		while (elapsedTime < _moveDuration)
-		{
-			transform.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / _moveDuration);
-			elapsedTime += Time.deltaTime;
-			yield return null;
-		}
+        float elapsedTime = 0f;
 
-		transform.position = endPosition;
-		transform.SetParent(target);
-	}
+        while (elapsedTime < _moveDuration)
+        {
+            transform.position = Vector3.Lerp(startPosition, target.position, elapsedTime / _moveDuration);
+            transform.rotation = Quaternion.Lerp(startRotation, target.rotation, elapsedTime / _moveDuration);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = target.position;
+        transform.rotation = target.rotation;
+        transform.SetParent(target);
+    }
 }
