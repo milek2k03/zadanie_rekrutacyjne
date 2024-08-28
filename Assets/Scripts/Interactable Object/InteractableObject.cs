@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class InteractableObject : MonoBehaviour
 {
-    [field: SerializeField] public string Name { get; private set; }
-    [field: SerializeField] public bool IsPickUp { get; set; } = false;
+    public bool IsPickUp { get; set; } = false;
+    [field: SerializeField] public InteractableObjectSO InteractableObjectSO { get; private set; }
 
     [SerializeField] private TMP_Text _itemName;
     [SerializeField] private GameObject _uiHolder;
+    [SerializeField] private Transform _uiHolderPosition;
     [SerializeField] private float _moveDuration = 0.5f;
 
     private Camera _mainCamera;
@@ -17,17 +18,14 @@ public class InteractableObject : MonoBehaviour
 
     private void Start()
     {
-        _itemName.text = Name;
+        _itemName.text = InteractableObjectSO.ObjectName;
         _uiHolder.SetActive(false);
         _mainCamera = Camera.main;
         _rigidbody = GetComponent<Rigidbody>();
-        _collider = GetComponent<Collider>();
+        _collider = GetComponentInChildren<Collider>();
     }
 
-    private void Update()
-    {
-        LookAtCamera();
-    }
+    private void Update() => LookAtCamera();
 
     private void LookAtCamera()
     {
@@ -39,14 +37,12 @@ public class InteractableObject : MonoBehaviour
 
     public void ShowItemUI()
     {
+        _uiHolder.transform.position = _uiHolderPosition.position;
         _uiHolder.SetActive(true);
     }
 
-    public void HideItemUI()
-    {
-        _uiHolder.SetActive(false);
-    }
-
+    public void HideItemUI() => _uiHolder.SetActive(false);
+    
     public IEnumerator SetNewPosition(Transform target)
     {
         HideItemUI();
@@ -55,22 +51,22 @@ public class InteractableObject : MonoBehaviour
         _rigidbody.isKinematic = true;
         _collider.isTrigger = true;
 
-        Vector3 startPosition = transform.position;
-        Quaternion startRotation = transform.rotation;
+        Vector3 startPosition = gameObject.transform.position;
+        Quaternion startRotation = gameObject.transform.rotation;
 
         float elapsedTime = 0f;
 
         while (elapsedTime < _moveDuration)
         {
-            transform.position = Vector3.Lerp(startPosition, target.position, elapsedTime / _moveDuration);
-            transform.rotation = Quaternion.Lerp(startRotation, target.rotation, elapsedTime / _moveDuration);
+            gameObject.transform.position = Vector3.Lerp(startPosition, target.position, elapsedTime / _moveDuration);
+            gameObject.transform.rotation = Quaternion.Lerp(startRotation, target.rotation, elapsedTime / _moveDuration);
 
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        transform.position = target.position;
-        transform.rotation = target.rotation;
-        transform.SetParent(target);
+        gameObject.transform.position = target.position;
+        gameObject.transform.rotation = target.rotation;
+        gameObject.transform.SetParent(target);
     }
 }

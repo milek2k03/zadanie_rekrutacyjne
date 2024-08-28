@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-	public event Action<bool> OnInteract;
+	public event Action<InteractableObject, int> OnInteract;
+	public event Action<bool> OnSetActiveInteractInfo;
 
 	[SerializeField] private float _moveSpeed = 5f;
 	[SerializeField] private float _mouseSensitivity = 100f;
@@ -12,12 +13,14 @@ public class PlayerController : MonoBehaviour
 
 	private Camera _playerCamera;
 	private float _xRotation = 0f;
+	private InventoryController _inventoryController;
 	private InteractableObject _currentInteractable;
 
 	private void Start()
 	{
-		Cursor.lockState = CursorLockMode.Locked;
+		//Cursor.lockState = CursorLockMode.Locked;
 		_playerCamera = GetComponentInChildren<Camera>();
+		_inventoryController = GetComponent<InventoryController>();
 	}
 
 	private void Update()
@@ -62,7 +65,7 @@ public class PlayerController : MonoBehaviour
 		RaycastHit hit;
 		if (Physics.Raycast(_playerCamera.transform.position, _playerCamera.transform.forward, out hit, _interactionDistance))
 		{
-			InteractableObject interactable = hit.collider.GetComponent<InteractableObject>();
+			InteractableObject interactable = hit.collider.GetComponentInParent<InteractableObject>();
 
 			if (interactable != null && !interactable.IsPickUp)
 			{
@@ -72,26 +75,26 @@ public class PlayerController : MonoBehaviour
 				{
 					_currentInteractable.HideItemUI();
 					_currentInteractable = null;
-					OnInteract?.Invoke(false);
+					OnSetActiveInteractInfo?.Invoke(false);
 				}
 
 				_currentInteractable = interactable;
 				_currentInteractable.ShowItemUI();
-				OnInteract?.Invoke(true);
+				OnSetActiveInteractInfo?.Invoke(true);
 
 			}
 			else if (_currentInteractable != null)
 			{
 				_currentInteractable.HideItemUI();
 				_currentInteractable = null;
-				OnInteract?.Invoke(false);
+				OnSetActiveInteractInfo?.Invoke(false);
 			}
 		}
 		else if (_currentInteractable != null)
 		{
 			_currentInteractable.HideItemUI();
 			_currentInteractable = null;
-			OnInteract?.Invoke(false);
+			OnSetActiveInteractInfo?.Invoke(false);
 		}
 	}
 
@@ -104,14 +107,22 @@ public class PlayerController : MonoBehaviour
 			{
 				_currentInteractable.HideItemUI();
 				_currentInteractable = null;
-				OnInteract?.Invoke(false);
+				OnSetActiveInteractInfo?.Invoke(false);
 			}
 		}
 	}
 
 	private void Interact()
 	{
+		int freeSlot = _inventoryController.TryGetFreeSlot();
+		if (freeSlot < 0)
+		{
+			Debug.LogError("Inventory is full!");
+			return;
+		}
+		
 		StartCoroutine(_currentInteractable.SetNewPosition(_handPosition));
-		OnInteract?.Invoke(false);
+		OnSetActiveInteractInfo?.Invoke(false);
+		OnInteract?.Invoke(_currentInteractable, freeSlot);
 	}
 }
