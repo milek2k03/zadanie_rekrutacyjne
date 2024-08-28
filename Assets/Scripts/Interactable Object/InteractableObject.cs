@@ -5,7 +5,7 @@ using UnityEngine;
 public class InteractableObject : MonoBehaviour
 {
     public bool IsPickUp { get; set; } = false;
-    [field: SerializeField] public InteractableObjectSO InteractableObjectSO { get; private set; }
+    [field: SerializeField] public InteractableObjectSO InteractableObjectSO { get; set; }
 
     [SerializeField] private TMP_Text _itemName;
     [SerializeField] private GameObject _uiHolder;

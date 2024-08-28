@@ -43,9 +43,12 @@ public class SlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
 		Icon.transform.SetParent(gameObject.transform);
 		Icon.rectTransform.anchoredPosition = _originalPosition;
-		
-		if (_inventoryUI.IsOverInventory) return;
 
-		_inventoryUI.RemoveItem(this);
+		if (_inventoryUI.IsOverCraftSystem && !_inventoryUI.IsOverInventory)
+			_inventoryUI.AddCraft(this);
+		else if (!_inventoryUI.IsOverCraftSystem && !_inventoryUI.IsOverInventory)
+			_inventoryUI.RemoveItem(this);
+		else
+			return;
 	}
 }

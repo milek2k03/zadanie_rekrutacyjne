@@ -5,33 +5,62 @@ using UnityEngine.UI;
 public class InventoryUI : MonoBehaviour
 {
 	public bool IsOverInventory = false;
+	public bool IsOverCraftSystem = false;
+
 
 	[SerializeField] private SlotUI[] _slots;
 	[SerializeField] private Color _selectedColor = Color.yellow;
 	[SerializeField] private Color _defaultColor = Color.white;
 	[SerializeField] private Image _background;
+	[SerializeField] private Image _craftWindow;
 
 	private Canvas _canvas;
 	private InventoryController _inventoryController;
 	private PlayerController _playerController;
-
+	private CraftingController _craftingController;
+	
 	private void Start()
 	{
 		_inventoryController = GetComponentInParent<InventoryController>();
 		_playerController = GetComponentInParent<PlayerController>();
-		_inventoryController.OnSlotChanged += UpdateUI;
-		_inventoryController.OngetSlot += SetFreeSlot;
-		_playerController.OnInteract += UpdateSlotIcon;
+		_craftingController = GetComponentInParent<CraftingController>();
 		_canvas = GetComponentInParent<Canvas>();
+
+		_inventoryController.OnSlotChanged += UpdateUI;
+		_inventoryController.OnGetSlot += SetFreeSlot;
+		_playerController.OnInteract += UpdateSlotIcon;
+
 		UpdateUI(0);
 	}
 
 	public void DetectIconObjectPosition(Vector2 screenPoint)
 	{
+		IsOverCraftSystem = false;
+		IsOverInventory = false;
+
 		if (RectTransformUtility.RectangleContainsScreenPoint(_background.rectTransform, screenPoint, _canvas.worldCamera))
+		{
+			IsOverCraftSystem = false;
 			IsOverInventory = true;
+		}
+		else if (RectTransformUtility.RectangleContainsScreenPoint(_craftWindow.rectTransform, screenPoint, _canvas.worldCamera))
+		{
+			if (_craftWindow.gameObject.activeInHierarchy)
+			{
+				IsOverCraftSystem = true;
+				IsOverInventory = false;
+			}
+			else
+			{
+				IsOverCraftSystem = false;
+				IsOverInventory = false;
+			}
+		}
 		else
+		{
+			IsOverCraftSystem = false;
 			IsOverInventory = false;
+		}
 	}
 
 	public void RemoveItem(SlotUI slotUI)
@@ -43,6 +72,19 @@ public class InventoryUI : MonoBehaviour
 			slotUI.Icon.enabled = false;
 			Destroy(_slots[slotIndex].CurrentInteractableObject.gameObject);
 			slotUI.CurrentInteractableObject = null;
+		}
+	}
+
+	public void AddCraft(SlotUI slotUI)
+	{
+		int slotIndex = Array.IndexOf(_slots, slotUI);
+		if (slotIndex >= 0 && slotIndex < _inventoryController.TotalSlots)
+		{
+			InteractableObject item = slotUI.CurrentInteractableObject;
+			if (item != null)
+			{
+				_inventoryController.AddCraftItem(item);
+			}
 		}
 	}
 
@@ -85,9 +127,9 @@ public class InventoryUI : MonoBehaviour
 			_slots[i].Icon.sprite = null;
 		}
 	}
-	
+
 	private void SetFreeSlot() => _inventoryController.CurrentFreeSlot = FreeSlot();
-	
+
 	private int FreeSlot()
 	{
 		for (int i = 0; i < _slots.Length; i++)

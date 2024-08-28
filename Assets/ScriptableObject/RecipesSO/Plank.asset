@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1b37667a0b301499f89e0da8f87f1b, type: 3}
+  m_Name: Plank
+  m_EditorClassIdentifier: 
+  Ingredients:
+  - {fileID: 11400000, guid: f46b09a14adf94e4b86abb83dc057538, type: 2}
+  - {fileID: 11400000, guid: f46b09a14adf94e4b86abb83dc057538, type: 2}
+  Result: {fileID: 11400000, guid: 765b181cc2b892a4dac8939fbd2b8789, type: 2}
+  ChanceOfSuccess: 80

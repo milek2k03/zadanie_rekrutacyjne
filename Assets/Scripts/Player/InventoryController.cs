@@ -1,26 +1,27 @@
+using System.Collections.Generic;
 using UnityEngine;
 using System;
-
 public class InventoryController : MonoBehaviour
 {
 	public event Action<int> OnSlotChanged;
-	public event Action OngetSlot;
+	public event Action OnGetSlot;
+	public event Action<InteractableObject> OnAddCraft;
 
 	public int CurrentFreeSlot { get; set; } = 0;
 	public int TotalSlots { get; private set; } = 9;
 
 	private int _selectedSlot = 0;
 
-	private void Update()
-	{
-		HandleInput();
-	}
+	private void Update() => HandleInput();
+	
+	public void AddCraftItem(InteractableObject interactableObject) => OnAddCraft?.Invoke(interactableObject);
+
 	public int TryGetFreeSlot()
 	{
-		OngetSlot?.Invoke();
+		OnGetSlot?.Invoke();
 		return CurrentFreeSlot;
 	}
-
+	
 	private void HandleInput()
 	{
 		for (int i = 0; i < TotalSlots; i++)

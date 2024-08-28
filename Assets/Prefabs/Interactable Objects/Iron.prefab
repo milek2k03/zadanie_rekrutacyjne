@@ -28,6 +28,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Iron
       objectReference: {fileID: 0}
+    - target: {fileID: 2355723063948475937, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5556093469661333619, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -70,8 +74,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5778910849076215567, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3
+      value: 1.64
       objectReference: {fileID: 0}
+    - target: {fileID: 7038128036275229310, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: ed5bd72d1b641ad46b42acbf222691b0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
 {
 	public event Action<InteractableObject, int> OnInteract;
 	public event Action<bool> OnSetActiveInteractInfo;
+	[field: SerializeField] public bool CanMove { get; set; } = true;
 
 	[SerializeField] private float _moveSpeed = 5f;
 	[SerializeField] private float _mouseSensitivity = 100f;
@@ -14,6 +15,7 @@ public class PlayerController : MonoBehaviour
 	private Camera _playerCamera;
 	private float _xRotation = 0f;
 	private InventoryController _inventoryController;
+	private CraftingController _craftingController;
 	private InteractableObject _currentInteractable;
 
 	private void Start()
@@ -21,6 +23,7 @@ public class PlayerController : MonoBehaviour
 		//Cursor.lockState = CursorLockMode.Locked;
 		_playerCamera = GetComponentInChildren<Camera>();
 		_inventoryController = GetComponent<InventoryController>();
+		_craftingController = GetComponent<CraftingController>();
 	}
 
 	private void Update()
@@ -38,6 +41,8 @@ public class PlayerController : MonoBehaviour
 
 	private void Move()
 	{
+		if (!CanMove) return;
+		
 		float h = Input.GetAxis("Horizontal");
 		float v = Input.GetAxis("Vertical");
 
@@ -49,6 +54,8 @@ public class PlayerController : MonoBehaviour
 
 	private void RotateCamera()
 	{
+		if (!CanMove) return;
+
 		float mouseX = Input.GetAxis("Mouse X") * _mouseSensitivity * Time.deltaTime;
 		float mouseY = Input.GetAxis("Mouse Y") * _mouseSensitivity * Time.deltaTime;
 
@@ -62,6 +69,8 @@ public class PlayerController : MonoBehaviour
 
 	private void CheckForInteractable()
 	{
+		if (!CanMove) return;
+
 		RaycastHit hit;
 		if (Physics.Raycast(_playerCamera.transform.position, _playerCamera.transform.forward, out hit, _interactionDistance))
 		{
@@ -100,6 +109,8 @@ public class PlayerController : MonoBehaviour
 
 	private void CheckDistanceToInteractable()
 	{
+		if (!CanMove) return;
+	
 		if (_currentInteractable != null)
 		{
 			float distance = Vector3.Distance(transform.position, _currentInteractable.transform.position);
@@ -114,13 +125,15 @@ public class PlayerController : MonoBehaviour
 
 	private void Interact()
 	{
+		if (!CanMove) return;
+	
 		int freeSlot = _inventoryController.TryGetFreeSlot();
 		if (freeSlot < 0)
 		{
 			Debug.LogError("Inventory is full!");
 			return;
 		}
-		
+
 		StartCoroutine(_currentInteractable.SetNewPosition(_handPosition));
 		OnSetActiveInteractInfo?.Invoke(false);
 		OnInteract?.Invoke(_currentInteractable, freeSlot);

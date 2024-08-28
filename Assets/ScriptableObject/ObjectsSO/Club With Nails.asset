@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 31ca5299a80e28140bebf83789556042, type: 3}
-  m_Name: Plank
+  m_Name: Club With Nails
   m_EditorClassIdentifier: 
-  ObjectName: Plank
-  Icon: {fileID: 21300000, guid: 505a603dcfb31484ca83eed220a7ba36, type: 3}
-  Prefab: {fileID: 2355723063948475937, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
+  ObjectName: Club With Nails
+  Icon: {fileID: 21300000, guid: 7ac9a121d8146ea4792daf6ad624eaf4, type: 3}
+  Prefab: {fileID: 1727863298719023027, guid: e91d98cc1cb1b084588460560f2632e0, type: 3}

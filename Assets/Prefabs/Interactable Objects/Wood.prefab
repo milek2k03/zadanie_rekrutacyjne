@@ -10,23 +10,23 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 161860821675994494, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.2
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 161860821675994494, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.1
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 161860821675994494, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.5
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 161860821675994494, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 161860821675994494, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 161860821675994494, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
       propertyPath: m_LocalRotation.y
@@ -38,19 +38,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 161860821675994494, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 1051176946751596466, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-    - target: {fileID: 1710556464304344106, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
-      propertyPath: <InteractableObjectSO>k__BackingField
-      value: 
-      objectReference: {fileID: 11400000, guid: 765b181cc2b892a4dac8939fbd2b8789, type: 2}
+      objectReference: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
     - target: {fileID: 2355723063948475937, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
       propertyPath: m_Name
-      value: Plank
+      value: Wood
       objectReference: {fileID: 0}
     - target: {fileID: 5556093469661333619, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
       propertyPath: m_LocalPosition.x
@@ -94,10 +90,46 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5778910849076215567, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.88
+      value: 0.13
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 5778910849076215567, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -2.67
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 8608011045401603547, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 232160776357222266, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4301064733832925428}
   m_SourcePrefab: {fileID: 100100000, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
+--- !u!1 &3779474292711757544 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 232160776357222266, guid: c63b928a2c692824bbdfd508a18f1385, type: 3}
+  m_PrefabInstance: {fileID: 3984470876358902162}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &4301064733832925428
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3779474292711757544}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.50000024
+  m_Height: 2.0000005
+  m_Direction: 1
+  m_Center: {x: 0.00000005960464, y: 1.2705494e-21, z: -0.00000008940699}
