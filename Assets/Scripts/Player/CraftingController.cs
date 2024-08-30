@@ -22,8 +22,10 @@ public class CraftingController : MonoBehaviour
 
 	private InventoryController _inventoryController;
 	private PlayerController _playerController;
+	private PlayerInputActions _inputActions;
 
-
+	private void Awake() => _inputActions = new PlayerInputActions();
+	
 	private void Start()
 	{
 		_inventoryController = GetComponent<InventoryController>();
@@ -32,7 +34,11 @@ public class CraftingController : MonoBehaviour
 		_craftingWindow.SetActive(false);
 	}
 
-	private void Update() => SetVisibilityOfCraftingWindow();
+	private void OnEnable()
+	{
+		_inputActions.Enable();
+		_inputActions.Player.Crafting.performed += ctx => SetVisibilityOfCraftingWindow();
+	}
 
 	public void ResetCraftingSlots() => OnResetCraftingSlots?.Invoke();
 
@@ -88,12 +94,12 @@ public class CraftingController : MonoBehaviour
 
 	private void SetVisibilityOfCraftingWindow()
 	{
-		if (!Input.GetKeyDown(KeyCode.I)) return;
 		if (_craftingWindow == null) return;
 
 		bool isActive = _craftingWindow.activeSelf;
 		_craftingWindow.SetActive(!isActive);
 
+		GameInputManager.Instance.GetBindingText(Binding.Crafting);
 		_playerController.CanMove = isActive;
 	}
 
@@ -121,5 +127,11 @@ public class CraftingController : MonoBehaviour
 	{
 		float chance = recipe.ChanceOfSuccess;
 		return UnityEngine.Random.Range(0f, 100f) <= chance;
+	}
+	
+	private void OnDisable()
+	{
+		_inputActions.Player.Crafting.performed -= ctx => SetVisibilityOfCraftingWindow();
+		_inputActions.Disable();
 	}
 }

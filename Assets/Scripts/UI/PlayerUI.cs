@@ -1,15 +1,20 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine;
+using TMPro;
 
 public class PlayerUI : MonoBehaviour
 {
-	[field: SerializeField] public float FadeEffectDuration {get; private set; } = 1f;
+	[field: SerializeField] public float FadeEffectDuration { get; private set; } = 1f;
 	public Image FadeOutEffectImage;
-	
+
 	[SerializeField] private Image _fadeOutImag;
 	[SerializeField] private GameObject _interactInfo;
 	[SerializeField] private float _fadeDuration = 3f;
+
+	[Header("Binding Text")]
+	[SerializeField] private TMP_Text _interactButtonText;
+	[SerializeField] private TMP_Text _craftingButtonText;
 
 	private PlayerController _playerController;
 
@@ -19,6 +24,9 @@ public class PlayerUI : MonoBehaviour
 		_playerController.OnSetActiveInteractInfo += SetActiveInteractInfo;
 		_interactInfo.SetActive(false);
 
+		_interactButtonText.text = GameInputManager.Instance.GetBindingText(Binding.Interact);
+		_craftingButtonText.text = GameInputManager.Instance.GetBindingText(Binding.Crafting);
+	
 		StartCoroutine(FadeOut(_fadeOutImag, _fadeDuration));
 	}
 
@@ -26,7 +34,7 @@ public class PlayerUI : MonoBehaviour
 	{
 		float startAlpha = 1f;
 		float endAlpha = 0f;
-		
+
 		SetImageAlpha(startAlpha, image);
 
 		float elapsedTime = 0f;
@@ -47,7 +55,7 @@ public class PlayerUI : MonoBehaviour
 		Color color = image.color;
 		image.color = new Color(color.r, color.g, color.b, alpha);
 	}
-	
+
 	private void SetActiveInteractInfo(bool isActive) => _interactInfo.SetActive(isActive);
 
 	private void OnDestroy() => _playerController.OnSetActiveInteractInfo -= SetActiveInteractInfo;

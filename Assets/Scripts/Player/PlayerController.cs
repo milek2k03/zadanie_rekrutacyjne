@@ -1,12 +1,13 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
 	public event Action<InteractableObject, int> OnInteract;
 	public event Action<bool> OnSetActiveInteractInfo;
 	[field: SerializeField] public bool CanMove { get; set; } = true;
-	[field: SerializeField]  public Transform GroundPosition { get; set; }
+	[field: SerializeField] public Transform GroundPosition { get; set; }
 
 	[SerializeField] private Transform _handPosition;
 	[SerializeField] private float _moveSpeed = 5f;
@@ -17,6 +18,15 @@ public class PlayerController : MonoBehaviour
 	private float _xRotation = 0f;
 	private InventoryController _inventoryController;
 	private InteractableObject _currentInteractable;
+	private PlayerInputActions _inputActions;
+
+	private void Awake() => _inputActions = new PlayerInputActions();
+	
+	private void OnEnable()
+	{
+		_inputActions.Enable();
+		_inputActions.Player.Interact.performed += ctx => Interact();
+	}
 
 	private void Start()
 	{
@@ -30,21 +40,14 @@ public class PlayerController : MonoBehaviour
 		RotateCamera();
 		CheckForInteractable();
 		CheckDistanceToInteractable();
-
-		if (Input.GetKeyDown(KeyCode.E) && _currentInteractable != null)
-		{
-			Interact();
-		}
 	}
 
 	private void Move()
 	{
 		if (!CanMove) return;
-		
-		float horizontal = Input.GetAxis("Horizontal");
-		float vertical = Input.GetAxis("Vertical");
 
-		Vector3 direction = _playerCamera.transform.forward * vertical + _playerCamera.transform.right * horizontal;
+		Vector2 inputVector = GameInputManager.Instance.GetMovementVectorNormalized();
+		Vector3 direction = _playerCamera.transform.forward * inputVector.y + _playerCamera.transform.right * inputVector.x;
 		direction.y = 0f;
 
 		transform.Translate(direction.normalized * _moveSpeed * Time.deltaTime, Space.World);
@@ -88,7 +91,6 @@ public class PlayerController : MonoBehaviour
 				_currentInteractable = interactable;
 				_currentInteractable.ShowItemUI();
 				OnSetActiveInteractInfo?.Invoke(true);
-
 			}
 			else if (_currentInteractable != null)
 			{
@@ -108,7 +110,7 @@ public class PlayerController : MonoBehaviour
 	private void CheckDistanceToInteractable()
 	{
 		if (!CanMove) return;
-	
+
 		if (_currentInteractable != null)
 		{
 			float distance = Vector3.Distance(transform.position, _currentInteractable.transform.position);
@@ -123,8 +125,8 @@ public class PlayerController : MonoBehaviour
 
 	private void Interact()
 	{
-		if (!CanMove) return;
-	
+		if (!CanMove || _currentInteractable == null) return;
+
 		int freeSlot = _inventoryController.TryGetFreeSlot();
 		if (freeSlot < 0)
 		{
@@ -135,5 +137,11 @@ public class PlayerController : MonoBehaviour
 		StartCoroutine(_currentInteractable.SetNewPosition(_handPosition, true));
 		OnSetActiveInteractInfo?.Invoke(false);
 		OnInteract?.Invoke(_currentInteractable, freeSlot);
+	}
+
+	private void OnDisable()
+	{
+		_inputActions.Player.Interact.performed -= ctx => Interact();
+		_inputActions.Disable();
 	}
 }
