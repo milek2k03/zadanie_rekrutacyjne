@@ -5,6 +5,7 @@ using System;
 public class CraftingController : MonoBehaviour
 {
 	public event Action<CraftingRecipeSO> OnCheckCraftableItems;
+	public event Action<EffectsTypes, CraftingEffectsSO> OnHandleCraftingEffects;
 	public event Action OnSetBlockIcon;
 	public event Action OnResetCraftingSlots;
 
@@ -16,16 +17,12 @@ public class CraftingController : MonoBehaviour
 	[Header("Effects to choose")]
 	[SerializeField] private EffectsTypes _successEffectsTypes;
 	[SerializeField] private EffectsTypes _failedEffectsTypes;
+	[SerializeField] private CraftingEffectsSO _successCrafting;
+	[SerializeField] private CraftingEffectsSO _failedCrafting;
 
 	private InventoryController _inventoryController;
 	private PlayerController _playerController;
 
-	private enum EffectsTypes
-	{
-		Visual,
-		Sound,
-		VisualAndSound
-	}
 
 	private void Start()
 	{
@@ -39,17 +36,6 @@ public class CraftingController : MonoBehaviour
 
 	public void ResetCraftingSlots() => OnResetCraftingSlots?.Invoke();
 
-	private void SetVisibilityOfCraftingWindow()
-	{
-		if (!Input.GetKeyDown(KeyCode.I)) return;
-		if (_craftingWindow == null) return;
-
-		bool isActive = _craftingWindow.activeSelf;
-		_craftingWindow.SetActive(!isActive);
-
-		_playerController.CanMove = isActive;
-	}
-
 	public void CraftItem()
 	{
 		if (_inventoryController == null) return;
@@ -62,41 +48,53 @@ public class CraftingController : MonoBehaviour
 				{
 					Vector3 spawnPosition = _playerController.transform.position + _playerController.transform.forward;
 					Instantiate(recipe.Result.Prefab, spawnPosition, Quaternion.identity);
+					OnHandleCraftingEffects?.Invoke(_successEffectsTypes, _successCrafting);
 
-					HandleCraftingEffects(_successEffectsTypes, true);
-
-					_craftingWindow.SetActive(false);
 					_playerController.CanMove = true;
 					return;
 				}
 				else
 				{
-					HandleCraftingEffects(_failedEffectsTypes, false);
+					OnHandleCraftingEffects?.Invoke(_failedEffectsTypes, _failedCrafting);
 					return;
 				}
 			}
 		}
 	}
 
-	private void HandleCraftingEffects(EffectsTypes effectsType, bool isSuccess)
+	public void CheckCraftableItems()
 	{
-		string result = isSuccess ? "succeeded" : "failed";
-
-		switch (effectsType)
+		foreach (CraftItem item in ItemsToCrafting)
 		{
-			case EffectsTypes.Visual:
-				Debug.Log($"Crafting {result} with visual effects.");
-				break;
-			case EffectsTypes.Sound:
-				Debug.Log($"Crafting {result} with sound effects.");
-				break;
-			case EffectsTypes.VisualAndSound:
-				Debug.Log($"Crafting {result} with both visual and sound effects.");
-				break;
-			default:
-				Debug.Log("Unknown effects type.");
-				break;
+			if (item.CraftInteractableObject == null) return;
+
+			bool canCraftAnyRecipe = false;
+
+			foreach (CraftingRecipeSO recipe in _recipes)
+			{
+				if (CanCraft(recipe))
+				{
+					OnCheckCraftableItems?.Invoke(recipe);
+					canCraftAnyRecipe = true;
+					break;
+				}
+			}
+
+			if (canCraftAnyRecipe) return;
+
+			OnSetBlockIcon?.Invoke();
 		}
+	}
+
+	private void SetVisibilityOfCraftingWindow()
+	{
+		if (!Input.GetKeyDown(KeyCode.I)) return;
+		if (_craftingWindow == null) return;
+
+		bool isActive = _craftingWindow.activeSelf;
+		_craftingWindow.SetActive(!isActive);
+
+		_playerController.CanMove = isActive;
 	}
 
 	private bool CanCraft(CraftingRecipeSO recipe)
@@ -123,29 +121,5 @@ public class CraftingController : MonoBehaviour
 	{
 		float chance = recipe.ChanceOfSuccess;
 		return UnityEngine.Random.Range(0f, 100f) <= chance;
-	}
-
-	public void CheckCraftableItems()
-	{
-		foreach (CraftItem item in ItemsToCrafting)
-		{
-			if (item.CraftInteractableObject == null) return;
-
-			bool canCraftAnyRecipe = false;
-
-			foreach (CraftingRecipeSO recipe in _recipes)
-			{
-				if (CanCraft(recipe))
-				{
-					OnCheckCraftableItems?.Invoke(recipe);
-					canCraftAnyRecipe = true;
-					break;
-				}
-			}
-
-			if (canCraftAnyRecipe) return;
-			item.CanCraft = false;
-			OnSetBlockIcon?.Invoke();
-		}
 	}
 }

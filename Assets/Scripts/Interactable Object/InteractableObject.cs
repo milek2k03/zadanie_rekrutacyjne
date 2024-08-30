@@ -4,69 +4,87 @@ using UnityEngine;
 
 public class InteractableObject : MonoBehaviour
 {
-    public bool IsPickUp { get; set; } = false;
-    [field: SerializeField] public InteractableObjectSO InteractableObjectSO { get; set; }
+	public bool IsPickUp { get; set; } = false;
+	[field: SerializeField] public InteractableObjectSO InteractableObjectSO { get; set; }
 
-    [SerializeField] private TMP_Text _itemName;
-    [SerializeField] private GameObject _uiHolder;
-    [SerializeField] private Transform _uiHolderPosition;
-    [SerializeField] private float _moveDuration = 0.5f;
+	[SerializeField] private TMP_Text _itemName;
+	[SerializeField] private GameObject _uiHolder;
+	[SerializeField] private Transform _uiHolderPosition;
+	[SerializeField] private float _moveDuration = 0.5f;
 
-    private Camera _mainCamera;
-    private Rigidbody _rigidbody;
-    private Collider _collider;
+	private Camera _mainCamera;
+	private Rigidbody _rigidbody;
+	private Collider _collider;
 
-    private void Start()
-    {
-        _itemName.text = InteractableObjectSO.ObjectName;
-        _uiHolder.SetActive(false);
-        _mainCamera = Camera.main;
-        _rigidbody = GetComponent<Rigidbody>();
-        _collider = GetComponentInChildren<Collider>();
-    }
+	private void Start()
+	{
+		_itemName.text = InteractableObjectSO.ObjectName;
+		_uiHolder.SetActive(false);
+		_mainCamera = Camera.main;
+		_rigidbody = GetComponent<Rigidbody>();
+		_collider = GetComponentInChildren<Collider>();
+	}
 
-    private void Update() => LookAtCamera();
+	private void Update() => LookAtCamera();
 
-    private void LookAtCamera()
-    {
-        if (!_uiHolder.activeSelf) return;
+	private void LookAtCamera()
+	{
+		if (!_uiHolder.activeSelf) return;
 
-        _uiHolder.transform.LookAt(_mainCamera.transform);
-        _uiHolder.transform.Rotate(0, 180f, 0);
-    }
+		_uiHolder.transform.LookAt(_mainCamera.transform);
+		_uiHolder.transform.Rotate(0, 180f, 0);
+	}
 
-    public void ShowItemUI()
-    {
-        _uiHolder.transform.position = _uiHolderPosition.position;
-        _uiHolder.SetActive(true);
-    }
+	public void ShowItemUI()
+	{
+		_uiHolder.transform.position = _uiHolderPosition.position;
+		_uiHolder.SetActive(true);
+	}
 
-    public void HideItemUI() => _uiHolder.SetActive(false);
-    
-    public IEnumerator SetNewPosition(Transform target)
-    {
-        HideItemUI();
+	public void HideItemUI() => _uiHolder.SetActive(false);
 
-        IsPickUp = true;
-        _rigidbody.isKinematic = true;
-        _collider.isTrigger = true;
+	public IEnumerator SetNewPosition(Transform target, bool isPickup)
+	{
+		HideItemUI();
 
-        Vector3 startPosition = gameObject.transform.position;
-        Quaternion startRotation = gameObject.transform.rotation;
+		if (isPickup)
+		{
+			IsPickUp = true;
+			_rigidbody.isKinematic = true;
+			_collider.isTrigger = true;
+		}
+		else
+		{
+			IsPickUp = false;
+			_rigidbody.isKinematic = false;
+			_collider.isTrigger = false;
+		}
 
-        float elapsedTime = 0f;
+		Vector3 startPosition = transform.position;
+		Quaternion startRotation = transform.rotation;
 
-        while (elapsedTime < _moveDuration)
-        {
-            gameObject.transform.position = Vector3.Lerp(startPosition, target.position, elapsedTime / _moveDuration);
-            gameObject.transform.rotation = Quaternion.Lerp(startRotation, target.rotation, elapsedTime / _moveDuration);
+		float elapsedTime = 0f;
 
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
+		while (elapsedTime < _moveDuration)
+		{
+			transform.position = Vector3.Lerp(startPosition, target.position, elapsedTime / _moveDuration);
+			transform.rotation = Quaternion.Lerp(startRotation, target.rotation, elapsedTime / _moveDuration);
 
-        gameObject.transform.position = target.position;
-        gameObject.transform.rotation = target.rotation;
-        gameObject.transform.SetParent(target);
-    }
+			elapsedTime += Time.deltaTime;
+			yield return null;
+		}
+
+		transform.position = target.position;
+		transform.rotation = target.rotation;
+
+		if (isPickup)
+		{
+			transform.SetParent(target);
+		}
+		else
+		{
+			gameObject.SetActive(true);
+			transform.SetParent(null);
+		}
+	}
 }

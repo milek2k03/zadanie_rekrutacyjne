@@ -4,9 +4,8 @@ using UnityEngine.UI;
 
 public class InventoryUI : MonoBehaviour
 {
-	public bool IsOverInventory = false;
-	public bool IsOverCraftSystem = false;
-
+	public bool IsOverInventory { get; private set; } = false;
+	public bool IsOverCraftSystem { get; private set; } = false;
 
 	[SerializeField] private SlotUI[] _slots;
 	[SerializeField] private Color _selectedColor = Color.yellow;
@@ -17,13 +16,11 @@ public class InventoryUI : MonoBehaviour
 	private Canvas _canvas;
 	private InventoryController _inventoryController;
 	private PlayerController _playerController;
-	private CraftingController _craftingController;
-	
+
 	private void Start()
 	{
 		_inventoryController = GetComponentInParent<InventoryController>();
 		_playerController = GetComponentInParent<PlayerController>();
-		_craftingController = GetComponentInParent<CraftingController>();
 		_canvas = GetComponentInParent<Canvas>();
 
 		_inventoryController.OnSlotChanged += UpdateUI;
@@ -33,59 +30,41 @@ public class InventoryUI : MonoBehaviour
 		UpdateUI(0);
 	}
 
-	public void DetectIconObjectPosition(Vector2 screenPoint)
-	{
-		IsOverCraftSystem = false;
-		IsOverInventory = false;
-
-		if (RectTransformUtility.RectangleContainsScreenPoint(_background.rectTransform, screenPoint, _canvas.worldCamera))
-		{
-			IsOverCraftSystem = false;
-			IsOverInventory = true;
-		}
-		else if (RectTransformUtility.RectangleContainsScreenPoint(_craftWindow.rectTransform, screenPoint, _canvas.worldCamera))
-		{
-			if (_craftWindow.gameObject.activeInHierarchy)
-			{
-				IsOverCraftSystem = true;
-				IsOverInventory = false;
-			}
-			else
-			{
-				IsOverCraftSystem = false;
-				IsOverInventory = false;
-			}
-		}
-		else
-		{
-			IsOverCraftSystem = false;
-			IsOverInventory = false;
-		}
-	}
-
 	public void RemoveItem(SlotUI slotUI)
 	{
 		int slotIndex = Array.IndexOf(_slots, slotUI);
-		if (slotIndex >= 0 && slotIndex < _inventoryController.TotalSlots)
-		{
-			slotUI.Icon.sprite = null;
-			slotUI.Icon.enabled = false;
-			Destroy(_slots[slotIndex].CurrentInteractableObject.gameObject);
-			slotUI.CurrentInteractableObject = null;
-		}
+		if (slotIndex < 0 && slotIndex >= _inventoryController.TotalSlots) return;
+
+		slotUI.Icon.sprite = null;
+		slotUI.Icon.enabled = false;
+		StartCoroutine(_slots[slotIndex].CurrentInteractableObject.SetNewPosition(_playerController.GroundPosition, false));
+		slotUI.CurrentInteractableObject = null;
 	}
 
 	public void AddCraft(SlotUI slotUI)
 	{
 		int slotIndex = Array.IndexOf(_slots, slotUI);
-		if (slotIndex >= 0 && slotIndex < _inventoryController.TotalSlots)
-		{
-			InteractableObject item = slotUI.CurrentInteractableObject;
-			if (item != null)
-			{
-				_inventoryController.AddCraftItem(item);
-			}
-		}
+		if (slotIndex < 0 && slotIndex >= _inventoryController.TotalSlots) return;
+
+		InteractableObject item = slotUI.CurrentInteractableObject;
+		
+		if (item == null) return;
+
+		_inventoryController.AddCraftItem(item);
+	}
+
+	public void DetectIconObjectPosition(Vector2 screenPoint)
+	{
+		IsOverInventory = IsOverUIElement(_background, screenPoint);
+		IsOverCraftSystem = !IsOverInventory && IsOverCraftWindow(_craftWindow, screenPoint);
+	}
+
+	private bool IsOverUIElement(Image uiElement, Vector2 screenPoint) => RectTransformUtility.RectangleContainsScreenPoint(uiElement.rectTransform, screenPoint, _canvas.worldCamera);
+
+	private bool IsOverCraftWindow(Image craftWindow, Vector2 screenPoint)
+	{
+		if (!craftWindow.gameObject.activeInHierarchy) return false;
+		return IsOverUIElement(craftWindow, screenPoint);
 	}
 
 	private void UpdateUI(int selectedSlot)
@@ -99,15 +78,17 @@ public class InventoryUI : MonoBehaviour
 			{
 				slotImage.color = _selectedColor;
 
-				if (currentItem != null)
-					currentItem.gameObject.SetActive(true);
+				if (currentItem == null) continue;
+
+				currentItem.gameObject.SetActive(true);
 			}
 			else
 			{
 				slotImage.color = _defaultColor;
 
-				if (currentItem != null)
-					currentItem.gameObject.SetActive(false);
+				if (currentItem == null) continue;
+
+				currentItem.gameObject.SetActive(false);
 			}
 		}
 	}

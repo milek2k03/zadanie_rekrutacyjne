@@ -10,65 +10,61 @@ public class ResultItem : MonoBehaviour
 	[SerializeField] private Button _resetButton;
 	[SerializeField] private Sprite _blockSprite;
 	[SerializeField] private TMP_Text _probabilityText;
+
 	private CraftingController _craftingController;
 
 	private void Start()
 	{
 		_craftingController = GetComponentInParent<CraftingController>();
 
-		_craftingController.OnCheckCraftableItems += SetResultIcon;
-		_craftingController.OnSetBlockIcon += SetBlockIcon;
+		_craftingController.OnCheckCraftableItems += UpdateResultIcon;
+		_craftingController.OnSetBlockIcon += DisplayBlockIcon;
 
-		_resetButton.onClick.AddListener(() =>
-		{
-			_craftingController.ResetCraftingSlots();
-			ResetCraftUI();
-		});
-		_resetButton.gameObject.SetActive(false);
-
+		_resetButton.onClick.AddListener(ResetUI);
 		_craftButton.onClick.AddListener(_craftingController.CraftItem);
-		_craftButton.gameObject.SetActive(false);
 
-		ResultImage.enabled = false;
-		_probabilityText.gameObject.SetActive(false);
+		ResetUI();
 	}
 
-	private void SetResultIcon(CraftingRecipeSO craftingRecipeSO)
+	private void UpdateResultIcon(CraftingRecipeSO craftingRecipeSO)
 	{
 		ResultImage.enabled = true;
+		ResultImage.sprite = craftingRecipeSO.Result.Icon;
+
 		_resetButton.gameObject.SetActive(true);
 		_craftButton.gameObject.SetActive(true);
+
 		_probabilityText.gameObject.SetActive(true);
-
-		ResultImage.sprite = craftingRecipeSO.Result.Icon;
-		_probabilityText.text = $"Probability : {craftingRecipeSO.ChanceOfSuccess} %";
+		_probabilityText.text = $"Probability: {craftingRecipeSO.ChanceOfSuccess}%";
 	}
 
-	private void SetBlockIcon()
+	private void DisplayBlockIcon()
 	{
-		_craftButton.gameObject.SetActive(false);
-		_resetButton.gameObject.SetActive(true);
-		_probabilityText.gameObject.SetActive(false);
-
-		ResultImage.enabled = true;
 		ResultImage.sprite = _blockSprite;
+		ResultImage.enabled = true;
+
+		_resetButton.gameObject.SetActive(true);
+		_craftButton.gameObject.SetActive(false);
+		_probabilityText.gameObject.SetActive(false);
 	}
 
-	private void ResetCraftUI()
+	private void ResetUI()
 	{
 		_craftingController.ResetCraftingSlots();
+
 		_resetButton.gameObject.SetActive(false);
 		_craftButton.gameObject.SetActive(false);
 		_probabilityText.gameObject.SetActive(false);
+
 		ResultImage.enabled = false;
 		ResultImage.sprite = null;
 	}
-	
-	private void OnDisable() => ResetCraftUI();
+
+	private void OnDisable() => ResetUI();
 
 	private void OnDestroy()
 	{
-		_craftingController.OnCheckCraftableItems -= SetResultIcon;
-		_craftingController.OnSetBlockIcon -= SetBlockIcon;
+		_craftingController.OnCheckCraftableItems -= UpdateResultIcon;
+		_craftingController.OnSetBlockIcon -= DisplayBlockIcon;
 	}
 }

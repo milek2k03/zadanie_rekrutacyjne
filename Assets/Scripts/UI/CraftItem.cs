@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class CraftItem : MonoBehaviour
 {
+	public InteractableObject CraftInteractableObject {get; set;}
 	public Image CraftICon;
-	public InteractableObject CraftInteractableObject;
-	public bool CanCraft = false;
 }

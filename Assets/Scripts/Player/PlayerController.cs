@@ -6,24 +6,22 @@ public class PlayerController : MonoBehaviour
 	public event Action<InteractableObject, int> OnInteract;
 	public event Action<bool> OnSetActiveInteractInfo;
 	[field: SerializeField] public bool CanMove { get; set; } = true;
+	[field: SerializeField]  public Transform GroundPosition { get; set; }
 
+	[SerializeField] private Transform _handPosition;
 	[SerializeField] private float _moveSpeed = 5f;
 	[SerializeField] private float _mouseSensitivity = 100f;
 	[SerializeField] private float _interactionDistance = 5f;
-	[SerializeField] private Transform _handPosition;
 
 	private Camera _playerCamera;
 	private float _xRotation = 0f;
 	private InventoryController _inventoryController;
-	private CraftingController _craftingController;
 	private InteractableObject _currentInteractable;
 
 	private void Start()
 	{
-		//Cursor.lockState = CursorLockMode.Locked;
 		_playerCamera = GetComponentInChildren<Camera>();
 		_inventoryController = GetComponent<InventoryController>();
-		_craftingController = GetComponent<CraftingController>();
 	}
 
 	private void Update()
@@ -43,10 +41,10 @@ public class PlayerController : MonoBehaviour
 	{
 		if (!CanMove) return;
 		
-		float h = Input.GetAxis("Horizontal");
-		float v = Input.GetAxis("Vertical");
+		float horizontal = Input.GetAxis("Horizontal");
+		float vertical = Input.GetAxis("Vertical");
 
-		Vector3 direction = _playerCamera.transform.forward * v + _playerCamera.transform.right * h;
+		Vector3 direction = _playerCamera.transform.forward * vertical + _playerCamera.transform.right * horizontal;
 		direction.y = 0f;
 
 		transform.Translate(direction.normalized * _moveSpeed * Time.deltaTime, Space.World);
@@ -134,7 +132,7 @@ public class PlayerController : MonoBehaviour
 			return;
 		}
 
-		StartCoroutine(_currentInteractable.SetNewPosition(_handPosition));
+		StartCoroutine(_currentInteractable.SetNewPosition(_handPosition, true));
 		OnSetActiveInteractInfo?.Invoke(false);
 		OnInteract?.Invoke(_currentInteractable, freeSlot);
 	}
