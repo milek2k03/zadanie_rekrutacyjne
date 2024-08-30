@@ -84,7 +84,7 @@ public class InteractableObject : MonoBehaviour
 		else
 		{
 			gameObject.SetActive(true);
-			transform.SetParent(null);
+			transform.SetParent(ObjectsHolder.Instance.ObjectHolder);
 		}
 	}
 }

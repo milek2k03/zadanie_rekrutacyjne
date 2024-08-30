@@ -53,7 +53,7 @@ public class CraftingController : MonoBehaviour
 				if (TryCraftWithChance(recipe))
 				{
 					Vector3 spawnPosition = _playerController.transform.position + _playerController.transform.forward;
-					Instantiate(recipe.Result.Prefab, spawnPosition, Quaternion.identity);
+					Instantiate(recipe.Result.Prefab, spawnPosition, Quaternion.identity, ObjectsHolder.Instance.ObjectHolder);
 					OnHandleCraftingEffects?.Invoke(_successEffectsTypes, _successCrafting);
 
 					_playerController.CanMove = true;
