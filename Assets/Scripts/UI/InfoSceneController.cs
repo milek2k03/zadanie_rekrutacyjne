@@ -13,11 +13,11 @@ public class InfoSceneController : MonoBehaviour
 		_startGameButton.onClick.AddListener(LoadNextScene);
 
 		_infoText.text = $"The player is moved using the " +
-			$"{GameInputManager.Instance.GetBindingText(Binding.MoveUp)}, " +
-			$"{GameInputManager.Instance.GetBindingText(Binding.MoveDown)}, " +
-			$"{GameInputManager.Instance.GetBindingText(Binding.MoveLeft)}, " +
-			$"{GameInputManager.Instance.GetBindingText(Binding.MoveRight)} " +
-			"and arrow keys. Interacting with items is done by pressing the " +
+			$"{GameInputManager.Instance.GetBindingText(Binding.MoveUp)}" +
+			$"{GameInputManager.Instance.GetBindingText(Binding.MoveDown)}" +
+			$"{GameInputManager.Instance.GetBindingText(Binding.MoveLeft)}" +
+			$"{GameInputManager.Instance.GetBindingText(Binding.MoveRight)}" +
+			". Interacting with items is done by pressing the " +
 			$"{GameInputManager.Instance.GetBindingText(Binding.Interact)} " +
 			"key, and opening the crafting panel is done by pressing the " +
 			$"{GameInputManager.Instance.GetBindingText(Binding.Crafting)} " +

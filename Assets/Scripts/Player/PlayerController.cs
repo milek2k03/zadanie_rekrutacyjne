@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
 	private PlayerInputActions _inputActions;
 
 	private void Awake() => _inputActions = new PlayerInputActions();
-	
+
 	private void OnEnable()
 	{
 		_inputActions.Enable();
@@ -36,6 +36,12 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
+		if (GameInputManager.Instance == null)
+		{
+			Debug.LogError("Everything's all right. Please start the game from Info Scene.");
+			return;
+		}
+	
 		Move();
 		RotateCamera();
 		CheckForInteractable();
@@ -44,8 +50,8 @@ public class PlayerController : MonoBehaviour
 
 	private void Move()
 	{
+		
 		if (!CanMove) return;
-
 		Vector2 inputVector = GameInputManager.Instance.GetMovementVectorNormalized();
 		Vector3 direction = _playerCamera.transform.forward * inputVector.y + _playerCamera.transform.right * inputVector.x;
 		direction.y = 0f;

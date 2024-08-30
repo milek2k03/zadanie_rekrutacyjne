@@ -24,9 +24,11 @@ public class PlayerUI : MonoBehaviour
 		_playerController.OnSetActiveInteractInfo += SetActiveInteractInfo;
 		_interactInfo.SetActive(false);
 
+		if (GameInputManager.Instance == null) return;
+		
 		_interactButtonText.text = GameInputManager.Instance.GetBindingText(Binding.Interact);
 		_craftingButtonText.text = GameInputManager.Instance.GetBindingText(Binding.Crafting);
-	
+
 		StartCoroutine(FadeOut(_fadeOutImag, _fadeDuration));
 	}
 
