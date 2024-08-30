@@ -1,0 +1,1 @@
+Welcome to my recruitment assignment. To start the game, go to the Info Scene. Control is performed using assigned buttons.
