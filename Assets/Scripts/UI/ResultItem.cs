@@ -66,5 +66,8 @@ public class ResultItem : MonoBehaviour
 	{
 		_craftingController.OnCheckCraftableItems -= UpdateResultIcon;
 		_craftingController.OnSetBlockIcon -= DisplayBlockIcon;
+		
+		_resetButton.onClick.RemoveListener(ResetUI);
+		_craftButton.onClick.RemoveListener(_craftingController.CraftItem);
 	}
 }

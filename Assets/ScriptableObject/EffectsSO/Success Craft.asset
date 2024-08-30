@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2bfe7717ae99014c98f08ac7e47c999, type: 3}
   m_Name: Success Craft
   m_EditorClassIdentifier: 
-  SpriteEffect: {fileID: 21300000, guid: 5d5a979affa6ea24ebecd459108581d6, type: 3}
+  SpriteEffect: {fileID: 21300000, guid: 606a4c67cfa1a3a43bece01714106338, type: 3}
   AudioEffect: {fileID: 8300000, guid: 558525a0057531440adab3ce90b9d8cd, type: 3}
